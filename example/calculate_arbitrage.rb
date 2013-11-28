@@ -1,6 +1,7 @@
 require 'clockwork'
-require_relative './arbitrage'
-require_relative './market'
+require_relative '../lib/arbitrage'
+require_relative '../lib/market'
+require_relative '../lib/account'
 
 module Clockwork
   configure do |config|
@@ -10,13 +11,9 @@ end
 
 include Clockwork
 
-class Account
-  def balance
-    { :usd => 0, :ltc => 24.95, :btc => 0.0 }
-  end
-end
-
-arbitrage = Arbitrage.new(Account.new, Market)
+account = Account.new
+puts account.balance
+arbitrage = Arbitrage.new(account,  Market)
 
 tests = [ %i[ltc btc usd], %i[ltc usd btc] ]
 
