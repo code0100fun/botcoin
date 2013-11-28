@@ -5,12 +5,16 @@ class Market
   def self.exchange pair
     reverse = !self.valid_pair?(pair)
     pair = self.reverse_pair(pair) if reverse
-    ticker = Btce::Ticker.new(pair.to_s)
-    rate = ticker.json["ticker"]["last"]
+    rate = fetch_rate pair
     reverse ? (1/rate) : rate
   end
 
 private
+
+  def self.fetch_rate pair
+    ticker = Btce::Ticker.new(pair.to_s)
+    ticker.json["ticker"]["last"]
+  end
 
   def self.currency_pairs
     Btce::API::CURRENCY_PAIRS
