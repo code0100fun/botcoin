@@ -18,6 +18,7 @@ describe Arbitrage do
     service.stub(:exchange).with(:btc_ltc).and_return(btc_ltc)
     service.stub(:exchange).with(:ltc_usd).and_return(ltc_usd)
     service.stub(:exchange).with(:usd_ltc).and_return(usd_ltc)
+    service.stub(:minus_fee).and_return(1.0 - 0.002)
     service
   end
 
@@ -28,6 +29,9 @@ describe Arbitrage do
     service.stub(:balance).and_return(balance)
     service
   end
+  let(:fee) { 1.0 - 0.002 }
+  let(:ltc_btc_usd) { ltc_btc * btc_usd * usd_ltc * fee**3 }
+  let(:ltc_usd_btc) { ltc_btc * usd_btc * btc_ltc * fee**3 }
 
   subject(:arbitrage) { Arbitrage.new(account_service, market_service) }
 
@@ -35,7 +39,7 @@ describe Arbitrage do
     result = arbitrage.evaluate(:ltc, :btc, :usd)
     profit = result[:profit]
     ltc = balance[:ltc]
-    expected = ((( ltc * ltc_btc) * btc_usd) * usd_ltc) - ltc
+    expected = ltc * ltc_btc_usd - ltc
     expect(profit).to be_within(error_delta).of(expected)
   end
 
@@ -43,7 +47,7 @@ describe Arbitrage do
     result = arbitrage.evaluate(:btc, :usd, :ltc)
     profit = result[:profit]
     btc = balance[:btc]
-    expected = ((( btc * btc_usd) * usd_ltc) * ltc_btc ) - btc
+    expected = btc * ltc_btc_usd - btc
     expect(profit).to be_within(error_delta).of(expected)
   end
 
@@ -51,7 +55,7 @@ describe Arbitrage do
     result = arbitrage.evaluate(:usd, :ltc, :btc)
     profit = result[:profit]
     usd = balance[:usd]
-    expected = ((( usd * usd_ltc) * ltc_btc ) * btc_usd ) - usd
+    expected = usd * ltc_btc_usd - usd
     expect(profit).to be_within(error_delta).of(expected)
   end
 
@@ -59,7 +63,7 @@ describe Arbitrage do
     result = arbitrage.evaluate(:usd, :btc, :ltc)
     profit = result[:profit]
     usd = balance[:usd]
-    expected = ((( usd * usd_btc) * btc_ltc ) * ltc_usd ) - usd
+    expected = usd * ltc_usd_btc - usd
     expect(profit).to be_within(error_delta).of(expected)
   end
 
@@ -67,7 +71,7 @@ describe Arbitrage do
     result = arbitrage.evaluate(:btc, :ltc, :usd)
     profit = result[:profit]
     btc = balance[:btc]
-    expected = ((( btc * btc_ltc ) * ltc_usd ) * usd_btc ) - btc
+    expected = btc * ltc_usd_btc - btc
     expect(profit).to be_within(error_delta).of(expected)
   end
 
@@ -75,7 +79,7 @@ describe Arbitrage do
     result = arbitrage.evaluate(:ltc, :usd, :btc)
     profit = result[:profit]
     ltc = balance[:ltc]
-    expected = ((( ltc * ltc_usd ) * usd_btc ) * btc_ltc ) - ltc
+    expected = ltc * ltc_usd_btc - ltc
     expect(profit).to be_within(error_delta).of(expected)
   end
 

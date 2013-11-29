@@ -9,6 +9,14 @@ class Market
     reverse ? (1/rate) : rate
   end
 
+  def self.fee
+    0.002
+  end
+
+  def self.minus_fee
+    1.0 - fee
+  end
+
 private
 
   def self.fetch_rate pair
