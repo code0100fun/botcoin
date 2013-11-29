@@ -22,7 +22,7 @@ class Arbitrage
   end
 
   def exchange_rate(a, b)
-    @market.exchange(join_symbols(a,b))
+    market.exchange(join_symbols(a,b))
   end
 
   def evaluate(a, b, c)
