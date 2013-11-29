@@ -6,7 +6,7 @@ class Market
     reverse = !self.valid_pair?(pair)
     pair = self.reverse_pair(pair) if reverse
     rate = fetch_rate pair
-    reverse ? (1/rate) : rate
+    reverse ? (1.0/rate) : rate
   end
 
   def self.fee
