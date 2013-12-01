@@ -1,6 +1,4 @@
-require 'rspec'
-require 'rspec/mocks'
-require 'arbitrage'
+require 'spec_helper'
 
 describe Arbitrage do
   let(:error_delta) { 0.0000000 }
