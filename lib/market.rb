@@ -2,38 +2,60 @@ require 'btce'
 
 class Market
 
-  def self.exchange pair
-    reverse = !self.valid_pair?(pair)
-    pair = self.reverse_pair(pair) if reverse
-    rate = fetch_rate pair
-    reverse ? (1.0/rate) : rate
+  def inverse price, invert
+    invert ? (1.0/price) : price
   end
 
-  def self.fee
+  def exchange a, b
+    ticker_price :last, a, b
+  end
+
+  def sell a, b
+    ticker_price :sell, a, b
+  end
+
+  def buy a, b
+    ticker_price :buy, a, b
+  end
+
+  def quote action, a, for_b
+    ticker_price action, a, for_b[:for]
+  end
+
+  def fee
     0.002
   end
 
-  def self.minus_fee
+  def minus_fee
     1.0 - fee
+  end
+
+  def reverse_pair pair
+    pair.to_s.split('_').reverse.join('_').to_sym
+  end
+
+  def join_symbols(*symbols)
+    symbols.map(&:to_s).join('_').to_sym
   end
 
 private
 
-  def self.fetch_rate pair
+  def ticker_price action, a, b
+    pair = join_symbols a, b
+    invert = !valid_pair?(pair)
+    pair = reverse_pair(pair) if invert
+    ticker = fetch_ticker pair
+    price = ticker[action.to_s].to_f
+    inverse price, invert
+  end
+
+  def fetch_ticker pair
     ticker = Btce::Ticker.new(pair.to_s)
-    ticker.json["ticker"]["last"]
+    ticker.json["ticker"]
   end
 
-  def self.currency_pairs
-    Btce::API::CURRENCY_PAIRS
-  end
-
-  def self.reverse_pair pair
-    pair.to_s.split('_').reverse.join('_').to_sym
-  end
-
-  def self.valid_pair?(pair)
-    self.currency_pairs.include?(pair.to_s)
+  def valid_pair?(pair)
+    Btce::API::CURRENCY_PAIRS.include?(pair.to_s)
   end
 
 end
