@@ -38,6 +38,19 @@ class Market
     symbols.map(&:to_s).join('_').to_sym
   end
 
+  def pair_for a, b
+    pair = join_symbols a, b
+    invert = !valid_pair?(pair)
+    pair = reverse_pair(pair) if invert
+    pair
+  end
+
+  def direction_for a, b
+    pair = join_symbols a, b
+    invert = !valid_pair?(pair)
+    invert ? :buy : :sell
+  end
+
 private
 
   def ticker_price action, a, b
