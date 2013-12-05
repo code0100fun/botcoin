@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Market do
+describe BotCoin::Market do
 
   before do
     stub_request(:get, "https://btc-e.com/api/2/btc_usd/ticker").to_return(
@@ -17,13 +17,7 @@ describe Market do
     })
   }
 
-  subject(:market){ Market.new }
-
-  describe '#reverse_pair' do
-    it 'makes :usd_ltc into :ltc_usd' do
-      expect(market.reverse_pair(:usd_ltc)).to eq(:ltc_usd)
-    end
-  end
+  subject(:market){ BotCoin::Market.new }
 
   describe 'sell' do
 
@@ -33,7 +27,7 @@ describe Market do
     end
 
     it 'returns top buy price' do
-      price = market.quote :buy, :btc, for: :usd
+      price = market.quote :buy, :btc, with: :usd
       expect(price).to eq(900)
     end
 

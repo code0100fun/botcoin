@@ -9,8 +9,8 @@ module BotCoin
       @b = for_b.fetch(:for)
       @price = for_b.fetch(:at)
       @market = for_b[:on]
-      @pair = market.pair_for(@a, @b)
-      @action = market.direction_for(@a, @b)
+      @pair = Pairs.pair_for(@a, @b)
+      @action = Pairs.direction_for(@a, @b)
     end
 
     def market
