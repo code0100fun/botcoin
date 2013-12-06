@@ -28,7 +28,7 @@ describe BotCoin::Market do
 
     it 'returns top buy price' do
       price = market.quote :buy, :btc, with: :usd
-      expect(price).to eq(900)
+      expect(price).to eq(1.0/900.0)
     end
 
     it 'returns last price' do

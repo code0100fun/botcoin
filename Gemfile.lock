@@ -15,6 +15,7 @@ GEM
       activesupport
       tzinfo (~> 0.3.35)
     coderay (1.1.0)
+    colorize (0.6.0)
     crack (0.4.1)
       safe_yaml (~> 0.9.0)
     diff-lcs (1.2.5)
@@ -51,6 +52,7 @@ PLATFORMS
 DEPENDENCIES
   btce
   clockwork
+  colorize
   multi_json
   pry
   rspec

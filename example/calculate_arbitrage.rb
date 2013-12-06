@@ -5,7 +5,7 @@ job = BotCoin::Job.new
 
 class FakeAccount
   def balance
-    {:usd => 1000, :ltc => 25, :btc => 1}
+    {:usd => 1000, :ltc => 20, :btc => 1}
   end
 end
 job.execute do
@@ -14,11 +14,11 @@ job.execute do
 
   tests = [
     %i[ltc btc usd],
-    %i[btc usd ltc],
-    %i[usd ltc btc],
+    # %i[btc usd ltc],
+    # %i[usd ltc btc],
     %i[ltc usd btc],
-    %i[usd btc ltc],
-    %i[btc ltc usd]
+    # %i[usd btc ltc],
+    # %i[btc ltc usd]
   ]
 
   def f(x)
@@ -26,27 +26,27 @@ job.execute do
   end
 
   def round_str amount, symbol
-    "#{f(amount)}#{symbol.to_s.upcase}"
+    "#{symbol.to_s.upcase}"
   end
 
   def log(result, a, b, c)
     a_b = BotCoin::Pairs.join_symbols(a, b)
     b_c = BotCoin::Pairs.join_symbols(b, c)
     c_a = BotCoin::Pairs.join_symbols(c, a)
-    puts result
     profit = f(result[:profit])
 
-    vals = [round_str(f(result[a]), a),
-            round_str(f(result[b]), b),
-            round_str(f(result[c]), c)]
+    vals = [round_str(result[a], a),
+            round_str(result[b], b),
+            round_str(result[c], c)]
 
-    # if profit.to_f > 0
-      puts vals.join(" -> ") << " => #{profit} #{a.to_s} gain"
-    # else
-    #   print "."
-    # end
+    message =  vals.join(" -> ") << " => #{profit} #{a.to_s} gain"
 
-    # puts "#{a.to_s} -(#{f result[a_b]})-> #{b.to_s} -(#{f result[b_c]})-> #{c.to_s} -(#{f result[c_a]})-> #{a.to_s} = #{profit} #{a.to_s} gain"
+    if profit.to_f > 0
+      puts message.green
+    else
+      puts message.red
+    end
+
   end
 
   every(1.second, 'fetch') do

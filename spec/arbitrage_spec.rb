@@ -1,6 +1,46 @@
 require 'spec_helper'
 
 describe Arbitrage do
+  before do
+    stub_request(:get, "https://btc-e.com/api/2/btc_usd/ticker").to_return(
+      :status => 200, :body => btc_usd_response
+    )
+    stub_request(:get, "https://btc-e.com/api/2/ltc_usd/ticker").to_return(
+      :status => 200, :body => ltc_usd_response
+    )
+    stub_request(:get, "https://btc-e.com/api/2/ltc_btc/ticker").to_return(
+      :status => 200, :body => ltc_btc_response
+    )
+  end
+
+  let(:btc_usd_response) { MultiJson.dump({
+      ticker: {
+        last: btc_usd,
+        buy: btc_usd,
+        sell: btc_usd,
+      }
+    })
+  }
+
+  let(:ltc_btc_response) { MultiJson.dump({
+      ticker: {
+        last: ltc_btc,
+        buy: ltc_btc,
+        sell: ltc_btc,
+      }
+    })
+  }
+
+  let(:ltc_usd_response) { MultiJson.dump({
+      ticker: {
+        last: ltc_usd,
+        buy: ltc_usd,
+        sell: ltc_usd,
+      }
+    })
+  }
+
+  subject(:market){ BotCoin::Market.new }
   let(:error_delta) { 0.0000001 }
 
   let(:ltc_btc) { 0.0252 }
@@ -9,26 +49,6 @@ describe Arbitrage do
   let(:usd_btc) { 1.0/btc_usd }
   let(:ltc_usd) { 21.0 }
   let(:usd_ltc) { 1.0/ltc_usd }
-
-  let(:market) do
-    service = double("market")
-    service.stub(:quote).with(:sell, :btc, for: :usd).and_return(btc_usd)
-    service.stub(:quote).with(:sell, :usd, for: :btc).and_return(usd_btc)
-    service.stub(:quote).with(:sell, :ltc, for: :btc).and_return(ltc_btc)
-    service.stub(:quote).with(:sell, :btc, for: :ltc).and_return(btc_ltc)
-    service.stub(:quote).with(:sell, :ltc, for: :usd).and_return(ltc_usd)
-    service.stub(:quote).with(:sell, :usd, for: :ltc).and_return(usd_ltc)
-
-    service.stub(:quote).with(:buy, :btc, with: :usd).and_return(usd_btc)
-    service.stub(:quote).with(:buy, :usd, with: :btc).and_return(btc_usd)
-    service.stub(:quote).with(:buy, :ltc, with: :btc).and_return(btc_ltc)
-    service.stub(:quote).with(:buy, :btc, with: :ltc).and_return(ltc_btc)
-    service.stub(:quote).with(:buy, :ltc, with: :usd).and_return(usd_ltc)
-    service.stub(:quote).with(:buy, :usd, with: :ltc).and_return(ltc_usd)
-    service.stub(:minus_fee).and_return(1.0 - 0.002)
-    service
-  end
-
   let(:balance) { { :usd => 100.0, :ltc => 25.0, :btc => 0.5 } }
 
   let(:account) do

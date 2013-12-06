@@ -1,4 +1,5 @@
 require 'clockwork'
+require 'colorize'
 require_relative '../lib/arbitrage'
 require_relative '../lib/market'
 require_relative '../lib/account'
